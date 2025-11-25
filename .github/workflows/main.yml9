@@ -1,0 +1,47 @@
+name: Build Flashie APK One-Tap
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Install Flutter
+      - name: Install Flutter
+        uses: subosito/flutter-action@v3
+        with:
+          flutter-version: '3.13.0'
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        working-directory: mobile
+        run: flutter pub get
+
+      # 4️⃣ Build APK
+      - name: Build APK
+        working-directory: mobile
+        run: flutter build apk --release
+
+      # 5️⃣ Upload APK (v4)
+      - name: Upload APK
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: Flashie-APK
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+
+      # 6️⃣ Show clickable download link
+      - name: Show APK download link
+        run: |
+          echo "##[group]Flashie APK Ready"
+          echo "Download your APK here: https://github.com/${{ github.repository }}/suites/${{ github.run_id }}/artifacts/${{ steps.upload.outputs.artifact_id }}/download"
+          echo "##[endgroup]"
