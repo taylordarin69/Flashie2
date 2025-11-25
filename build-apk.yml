@@ -1,0 +1,18 @@
+name: Build APK
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+    - run: flutter pub get
+      working-directory: mobile
+    - run: flutter build apk --release
+      working-directory: mobile
+    - uses: actions/upload-artifact@v3
+      with:
+        name: flashie-apk
+        path: mobile/build/app/outputs/flutter-apk/app-release.apk
